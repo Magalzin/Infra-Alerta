@@ -17,9 +17,7 @@ public class ChamadoService {
 
     public List<Chamado> getAllChamados() {
         List<Chamado> chamados = repository.findAll();
-        chamados.forEach(chamado -> System.out.println(chamado.getCurtidas()));
         chamados.sort((Chamado c1, Chamado c2) -> Integer.compare(c2.getCurtidas(), c1.getCurtidas()));
-        chamados.forEach(chamado -> System.out.println(chamado.getCurtidas()));
         return chamados;
     }
 
@@ -37,6 +35,35 @@ public class ChamadoService {
             Chamado chamado = chamadoOpt.get();
             chamado.setCurtidas(chamado.getCurtidas() + 1);
             return repository.save(chamado);
+        } else {
+            throw new RuntimeException("Chamado não encontrado");
+        }
+    }
+
+    public Chamado updateChamado(Long id, Chamado dadosAtualizados){
+        Optional<Chamado> chamadoOpt = findChamadoByID(id);
+
+        if (chamadoOpt.isPresent()) {
+            Chamado chamadoExistente = chamadoOpt.get();
+            chamadoExistente.setTitulo(dadosAtualizados.getTitulo());
+            chamadoExistente.setDescricao(dadosAtualizados.getDescricao());
+            chamadoExistente.setCidade(dadosAtualizados.getCidade());
+            chamadoExistente.setBairro(dadosAtualizados.getBairro());
+            chamadoExistente.setRua(dadosAtualizados.getRua());
+
+            return repository.save(chamadoExistente);
+        } else {
+            throw new RuntimeException("Chamado não encontrado");
+        }
+    }
+
+    public void deleteChamado(Long id){
+        Optional<Chamado> chamadoOpt = findChamadoByID(id);
+        if (chamadoOpt.isPresent()) {
+            Chamado chamadoExistente = chamadoOpt.get();
+            
+            repository.delete(chamadoExistente);
+            
         } else {
             throw new RuntimeException("Chamado não encontrado");
         }

@@ -43,26 +43,36 @@ document
 
       const data = await response.json(); // Processa a resposta do servidor
       console.log(response.status);
+      console.log("Chamado criado:", data);
+      if (!data.id) {
+        console.log("Data id não pega", data.id);
+      }
 
       const chamadosContainer = document.getElementById("chamadosContainer");
       const chamadoInsert = document.createElement("div");
       chamadoInsert.classList.add("background-chamado", "card", "p-3", "mb-3");
       chamadoInsert.innerHTML = `
-            <h5>${data.titulo}</h5>
-            <p>${data.descricao}</p>
-            <small><strong>Cidade:</strong> ${data.cidade} | 
-            <strong>Bairro:</strong> ${data.bairro} | 
-            <strong>Rua:</strong> ${data.rua} |
-            <strong id="curtidas-count">Curtidas: </strong> <span id="curtidas-number-${data.id}">
-              ${data.curtidas}
-            </span> |
-            <button type="button" class="btn btn-outline-danger w-20 h-20" id="curtir" data-id="${data.id}" onclick="curtir(this)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-              </svg>
-            </button>
-            </small>
-        `;
+  <div class="position-relative">
+  <h5 contenteditable="false" class="editable" data-field="titulo">${data.titulo}</h5>
+  <p contenteditable="false" class="editable" data-field="descricao">${data.descricao}</p>
+    <small>
+      <strong>Cidade:</strong> <span contenteditable="false" class="editable" data-field="cidade">${data.cidade}</span> |
+      <strong>Bairro:</strong> <span contenteditable="false" class="editable" data-field="bairro">${data.bairro}</span> |
+      <strong>Rua:</strong> <span contenteditable="false" class="editable" data-field="rua">${data.rua}</span> |
+      <strong>Curtidas:</strong> <span id="curtidas-number-${data.id}">${data.curtidas}</span> |
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="curtir(this)" data-id="${data.id}">
+        ❤️
+      </button>
+      <button class="btn btn-outline-light btn-sm ms-2" onclick="toggleEdit(this)" data-id="${data.id}">
+        ✏️
+      </button>
+      <button class="btn btn-outline-light btn-sm ms-2" onclick="deleteChamado(this)" data-id="${data.id}" data-titulo="${data.titulo}">
+        🗑️
+      </button>
+    </small>
+  </div>
+`;
+
       chamadosContainer.appendChild(chamadoInsert);
 
       document.getElementById("chamadoForm").reset();
@@ -93,22 +103,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       const chamadoInsert = document.createElement("div");
       chamadoInsert.classList.add("background-chamado", "card", "p-3", "mb-3");
       chamadoInsert.innerHTML = `
-            <h5>${chamado.titulo}</h5>
-            <p>${chamado.descricao}</p>
-            <small>
-            <strong>Cidade:</strong> ${chamado.cidade} | 
-            <strong>Bairro:</strong> ${chamado.bairro} | 
-            <strong>Rua:</strong> ${chamado.rua} | 
-            <strong id="curtidas-count">Curtidas: </strong> <span id="curtidas-number-${chamado.id}">
-              ${chamado.curtidas}
-            </span> |
-            <button type="button" class="btn btn-outline-danger w-20 h-20" id="curtir" data-id="${chamado.id}" onclick="curtir(this)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-              </svg>
-            </button>
-            </small>
-        `;
+  <div class="position-relative">
+    <h5 contenteditable="false" class="editable" data-field="titulo">${chamado.titulo}</h5>
+    <p contenteditable="false" class="editable" data-field="descricao">${chamado.descricao}</p>
+    <small>
+      <strong>Cidade:</strong> <span contenteditable="false" class="editable" data-field="cidade">${chamado.cidade}</span> |
+      <strong>Bairro:</strong> <span contenteditable="false" class="editable" data-field="bairro">${chamado.bairro}</span> |
+      <strong>Rua:</strong> <span contenteditable="false" class="editable" data-field="rua">${chamado.rua}</span> |
+      <strong>Curtidas:</strong> <span id="curtidas-number-${chamado.id}">${chamado.curtidas}</span> |
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="curtir(this)" data-id="${chamado.id}">
+        ❤️
+      </button>
+      <button class="btn btn-outline-light btn-sm ms-2" onclick="toggleEdit(this)" data-id="${chamado.id}">
+        ✏️
+      </button>
+      <button class="btn btn-outline-light btn-sm ms-2" onclick="deleteChamado(this)" data-id="${chamado.id}" data-titulo="${chamado.titulo}">
+        🗑️
+      </button>
+    </small>
+  </div>
+`;
+
       chamadosContainer.appendChild(chamadoInsert);
     });
   } catch (error) {
@@ -122,6 +137,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 async function curtir(button) {
   // Obtendo o ID do chamado a partir do atributo "data-id"
   const idChamado = button.getAttribute("data-id");
+  console.log("VAMOS CURTIR", idChamado);
 
   if (idChamado) {
     // chama uma função para curtir o chamado
@@ -132,9 +148,10 @@ async function curtir(button) {
     );
 
     currentCurtidas++;
-  
+
     // Atualiza o texto dentro do <span> com o novo número de curtidas
-    document.getElementById(`curtidas-number-${idChamado}`).textContent = currentCurtidas;
+    document.getElementById(`curtidas-number-${idChamado}`).textContent =
+      currentCurtidas;
   } else {
     console.error("ID do chamado não encontrado.");
   }
@@ -154,5 +171,76 @@ async function curtirChamado(id) {
     }
   } catch (error) {
     console.error("Erro ao conectar com o servidor", error);
+  }
+}
+
+// PUT
+function toggleEdit(button) {
+  const card = button.closest(".card");
+  const isEditing = button.getAttribute("data-editing") === "true";
+  const id = button.getAttribute("data-id");
+
+  const fields = card.querySelectorAll(".editable");
+
+  if (!isEditing) {
+    // Torna os campos editáveis
+    fields.forEach((el) => el.setAttribute("contenteditable", "true"));
+    button.innerText = "💾";
+    button.setAttribute("data-editing", "true");
+  } else {
+    // Coleta os dados atualizados
+    const chamadoAtualizado = {};
+    fields.forEach((el) => {
+      chamadoAtualizado[el.getAttribute("data-field")] = el.innerText;
+      el.setAttribute("contenteditable", "false");
+    });
+
+    button.innerText = "✏️";
+    button.setAttribute("data-editing", "false");
+
+    // Envia o PUT
+    fetch(`http://localhost:8080/chamados/update/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(chamadoAtualizado),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao atualizar chamado");
+        return res.json();
+      })
+      .then((data) => {
+        alert("Chamado atualizado com sucesso!");
+        console.log("Atualizado:", data);
+      })
+      .catch((err) => {
+        alert("Erro ao atualizar");
+        console.error(err);
+      });
+  }
+}
+
+// DELETE
+async function deleteChamado(button){
+  const id = button.getAttribute("data-id");
+  const titulo = button.getAttribute("data-titulo");
+
+  // Aqui você deve fazer uma requisição DELETE para remover o chamado
+  try {
+    const response = await fetch(`http://localhost:8080/chamados/delete/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Erro ao deletar chamado");
+    }
+    
+    const card = button.closest(".card");
+
+    alert(`Chamado ${titulo} deletado com sucesso!`);
+    // Remove o card da interface
+    if (card) card.remove();
+  } catch (err) {
+    alert("Erro ao deletar chamado");
+    console.error(err);
   }
 }
