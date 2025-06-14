@@ -24,7 +24,7 @@ document
     }
 
     try {
-      const response = await fetch("http://localhost:8080/chamados/criar", {
+      const response = await fetch("/chamados/criar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: `{
@@ -87,7 +87,7 @@ document
 //GET
 document.addEventListener("DOMContentLoaded", async function () {
   try {
-    const response = await fetch("http://localhost:8080/chamados", {
+    const response = await fetch("/chamados", {
       method: "GET",
       headers: { "Content-type": "application/json" },
     });
@@ -160,7 +160,7 @@ async function curtir(button) {
 // Função para enviar requisição de curtida
 async function curtirChamado(id) {
   try {
-    const response = await fetch(`http://localhost:8080/chamados/like/${id}`, {
+    const response = await fetch(`/chamados/like/${id}`, {
       method: "POST",
     });
 
@@ -199,7 +199,7 @@ function toggleEdit(button) {
     button.setAttribute("data-editing", "false");
 
     // Envia o PUT
-    fetch(`http://localhost:8080/chamados/update/${id}`, {
+    fetch(`/chamados/update/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(chamadoAtualizado),
@@ -226,7 +226,7 @@ async function deleteChamado(button){
 
   // Aqui você deve fazer uma requisição DELETE para remover o chamado
   try {
-    const response = await fetch(`http://localhost:8080/chamados/delete/${id}`, {
+    const response = await fetch(`/chamados/delete/${id}`, {
       method: "DELETE",
     });
 
