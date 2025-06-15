@@ -183,22 +183,23 @@ function toggleEdit(button) {
   const fields = card.querySelectorAll(".editable");
 
   if (!isEditing) {
-    // Torna os campos editáveis
-    fields.forEach((el) => el.setAttribute("contenteditable", "true"));
+    fields.forEach((el) => {
+      el.setAttribute("contenteditable", "true");
+      el.classList.add("editing-active"); // <-- Aplica estilo visual
+    });
     button.innerText = "💾";
     button.setAttribute("data-editing", "true");
   } else {
-    // Coleta os dados atualizados
     const chamadoAtualizado = {};
     fields.forEach((el) => {
       chamadoAtualizado[el.getAttribute("data-field")] = el.innerText;
       el.setAttribute("contenteditable", "false");
+      el.classList.remove("editing-active"); // <-- Remove o estilo
     });
 
     button.innerText = "✏️";
     button.setAttribute("data-editing", "false");
 
-    // Envia o PUT
     fetch(`/chamados/update/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -218,6 +219,7 @@ function toggleEdit(button) {
       });
   }
 }
+
 
 // DELETE
 async function deleteChamado(button){
