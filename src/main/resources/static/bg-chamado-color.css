@@ -7,7 +7,7 @@ body{
 
 .editing-active {
   border: 1px solid #97999b;
-  background-color: #d3d3d3;
+  background-color: #e4e4e4;
   padding: 4px;
   border-radius: 4px;
   transition: all 0.3s ease;
